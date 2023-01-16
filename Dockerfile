@@ -1,5 +1,6 @@
 FROM composer:2.4 as build
 COPY . /app/
+RUN composer update --no-interaction
 RUN composer install --prefer-dist --no-dev --optimize-autoloader --no-interaction
 
 FROM php:8.1-apache-buster as dev
@@ -21,6 +22,7 @@ COPY .env.dev /var/www/html/.env
 RUN php artisan config:cache && \
     php artisan route:cache && \
     chmod 777 -R /var/www/html/storage/ && \
+    chmod o+w ./storage/ -R && \
     chown -R www-data:www-data /var/www/ && \
     a2enmod rewrite
 
